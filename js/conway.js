@@ -11,6 +11,12 @@ var conway = conway || {};
         this.board = null;
     };
 
+    const LIVE = conway.Board.ON,
+          DEAD = conway.Board.OFF,
+          UNDERPOPULATION = 2 * LIVE,
+          OVERPOPULATION = 3 * LIVE,
+          REPRODUCTION = 3 * LIVE;
+
     conway.Game.prototype = {
         init:function(width, height) {
             this.conwayBoard = new conway.BufferedBoard(width, height);
@@ -32,18 +38,35 @@ var conway = conway || {};
                 xytopos = this.conwayBoard.xytopos;
             
             for(var y=0; y<height; y++){
-                for(var x=0; y<width; x++){
+                for(var x=0; x<width; x++){
+                    value = board.getValue(x, y);
+                    liveCount = 0;
                     liveCount += board.getValue(x-1, y-1);
                     liveCount += board.getValue(x, y-1);
                     liveCount += board.getValue(x+1, y-1);
                     
                     liveCount += board.getValue(x-1, y);
-                    liveCount += board.getValue(x, y);
                     liveCount += board.getValue(x+1, y);
                     
                     liveCount += board.getValue(x-1, y+1);
                     liveCount += board.getValue(x, y+1);
                     liveCount += board.getValue(x+1, y+1);
+
+                    if(value === LIVE){
+                        if( liveCount < UNDERPOPULATION || liveCount > OVERPOPULATION ){
+                            board.setValue(x, y, DEAD);
+                        }else{
+                            //Remain alive
+                            board.setValue(x, y, LIVE);
+                        }
+                    }else{
+                        if( liveCount === REPRODUCTION ){
+                            board.setValue(x, y, LIVE);
+                        }else{
+                            //remain dead
+                            board.setValue(x, y, DEAD);
+                        }
+                    }
                 }
             }
 
@@ -58,46 +81,3 @@ var conway = conway || {};
         }
     };
 })(conway);
-/*
-function move() {
-    // copy world data
-    world_data[1].set(world_data[0]);
-
-    var ct = 0, v;
-    for(var x=0; x<cells_x; ++x){
-        for(var y=0; y<cells_y; ++y){
-            // How many neighbor cells are alive?
-            ct = 0;
-            ct += get_cell_value(1, x-1, y-1);
-            ct += get_cell_value(1, x,   y-1);
-            ct += get_cell_value(1, x+1, y-1);
-            ct += get_cell_value(1, x-1, y);
-            ct += get_cell_value(1, x+1, y);
-            ct += get_cell_value(1, x-1, y+1);
-            ct += get_cell_value(1, x,   y+1);
-            ct += get_cell_value(1, x+1, y+1);
-
-            // cell value		
-            v = get_cell_value(1, x, y);           
-
-            if(v==1){
-                if (ct<2 || ct>3) {
-                    // death by underpopulation
-                    set_cell_value(x, y, 0);
-                } else {
-                    // Live to see another day
-                    set_cell_value(x, y, 1);
-                } 
-            }else if(v==0){
-                if (ct==3) {
-                    // Give birth to a new cell
-                    set_cell_value(x, y, 1);
-                } else {
-                    // remain dead
-                    set_cell_value(x, y, 0);
-                }
-            }
-        } // for y ...
-    } // for x ...
-}
-*/

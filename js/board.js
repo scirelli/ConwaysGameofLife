@@ -50,12 +50,15 @@ var conway = conway || {};
             return this.width;
         },
         getValue:function(x, y){
-            return this.getBoard()[(y*this.width) + x] || 0;
+            return this.board[(y*this.width) + x] || 0;
+        },
+        setValue:function(x, y, v){
+            this.getBoard()[(y*this.width) + x] = v;
+            return this;
         },
         toString:function() {
             var height = this.getHeight(),
                 width = this.getWidth(),
-                board = this.getBoard(),
                 str = [];
 
             for(var y=0; y<height; y++){
@@ -74,7 +77,7 @@ var conway = conway || {};
 
         var bufferedBoard = [this.board, new conway.Board(width, height)];
 
-        this.board = bufferBoard[0];
+        this.board = bufferedBoard[0];
         this.drawBoard = bufferedBoard[1];
     };
     conway.BufferedBoard.prototype = new conway.Board();
@@ -88,11 +91,32 @@ var conway = conway || {};
 
     conway.BufferedBoard.prototype.setBoard = function(board) {
         this.drawBoard = board.slice(0);
-        this.board = boa.slice(0);
+        this.board = board.slice(0);
         return this;
     };
 
     conway.BufferedBoard.prototype.getDrawBoard = function() {
         return this.drawBoard;
+    };
+
+    conway.BufferedBoard.prototype.setValue = function(x, y, v){
+        this.drawBoard[(y*this.width) + x] = v;
+        return this;
+    };
+
+    conway.BufferedBoard.prototype.toString = function(){
+            var height = this.getHeight(),
+                width = this.getWidth(),
+                board = this.getDrawBoard(),
+                str = [];
+
+            for(var y=0; y<height; y++){
+                for(var x=0, s=[]; x<width; x++){
+                    s.push(board[(y*this.width) + x] ? 'X' : '_');
+                }
+                str.push(s.join(','));
+            }
+
+            return str.join('\n');
     };
 })(conway);
