@@ -9,6 +9,8 @@ var conway = conway || {};
     'use strict';
     conway.Game = function(){
         this.board = null;
+        this.container = null;
+        this.canvas = null;
     };
 
     const LIVE = conway.Board.ON,
@@ -72,6 +74,14 @@ var conway = conway || {};
 
             return this;
         },
+        setDisplayContainerElement:function(el){
+            if(typeof(el) === 'string'){
+                this.container = document.querySelector(el);
+            }else{
+                this.container = el;
+            }
+            return this;
+        },
         toString:function() {
             return this.conwayBoard.toString(); 
         },
@@ -79,5 +89,11 @@ var conway = conway || {};
             console.log(this.toString()); 
             return this;
         }
+    };
+
+    function createCanvas() {
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = this.conwayBoard.getWidth();
+        this.canvas.height = this.conwayBoard.getHeight();
     };
 })(conway);

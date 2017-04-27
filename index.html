@@ -10,18 +10,23 @@
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
         <!-- Place favicon.ico in the root directory -->
 
+        <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+        <link rel="import" href="bower_components/polymer/polymer-element.html">
+        <link rel="import" href="elements/conwayGameOfLife.html">
+
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
-        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
     <body>
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <section id="gameContainer">
-
+        <section>
+            <conway-game-of-life height="500" width="500"></conway-game-of-life>
         </section>
+
         <section id="formContainer">
             <form>
                 <fieldset>
@@ -32,7 +37,6 @@
             </form>
         </section>
 
-        <script src="js/plugins.js"></script>
         <script src="js/extras-math.js"></script>
         <script src="js/point.js"></script>
         <script src="js/board.js"></script>

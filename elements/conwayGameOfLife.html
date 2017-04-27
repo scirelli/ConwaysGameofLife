@@ -1,0 +1,59 @@
+<dom-module id="conway-game-of-life">
+    <template>
+        <style>
+            :host{
+                display:inline-block;
+            }
+            canvas{
+                background-color: black;
+            }
+        </style>
+        <canvas id="gameBoard"></canvas>
+    </template>
+
+    <script>
+        HTMLImports.whenReady(function() {
+            class ConwayGameOfLifeElement extends Polymer.Element {
+                static get is() { return 'conway-game-of-life'; }
+                static get properties() {
+                    return {
+                        width: {
+                            value:100,
+                            type: Number,
+                            readOnly: false,
+                            notify: true,
+                            observer: '_widthChanged'
+                        },
+                        height: {
+                            value:100,
+                            type: Number,
+                            readOnly: false,
+                            observer: '_heightChange'
+                        }
+                    }
+                }
+                
+                constructor() {
+                    super();
+                    console.log('conway-game-of-life created');
+                }
+
+                ready() {
+                    super.ready();
+                    this.$.gameBoard.width = this.width;
+                    this.$.gameBoard.height = this.height;
+                }
+
+                _heightChange(newValue, oldValue) {
+                    this.$.gameBoard.height = newValue;
+                }
+                
+                _widthChanged(newValue, oldValue) {
+                    this.$.gameBoard.width = newValue;
+                }
+            }
+
+            window.customElements.define(ConwayGameOfLifeElement.is, ConwayGameOfLifeElement);
+        });
+    </script>
+</dom-module>
