@@ -3,19 +3,19 @@ var conway = conway || {};
 (function(conway){
     'use strict';
 
-    const O = conway.Board.ON,
-          F = conway.Board.OFF;
+    const O = conway.ConwayImageBoard.ON,
+          F = conway.ConwayImageBoard.OFF;
 
     conway.Patterns = {
         Blinker:function(){
-            return new conway.Board(5, 3).setBoard([
+            return new conway.ArrayBoard(5, 3).setData([
                 F,F,F,F,F,
                 F,O,O,O,F,
                 F,F,F,F,F
             ]);
         },
         Toad:function() {
-            return new conway.Board(6, 4).setBoard([
+            return new conway.ArrayBoard(6, 4).setData([
                 F,F,F,F,F,F,
                 F,O,O,O,F,F,
                 F,F,O,O,O,F,
@@ -23,7 +23,7 @@ var conway = conway || {};
             ]);
         },
         Beacon:function() {
-            return new conway.Board(6, 6).setBoard([
+            return new conway.ArrayBoard(6, 6).setData([
                 F,F,F,F,F,F,
                 F,O,O,F,F,F,
                 F,O,O,F,F,F,

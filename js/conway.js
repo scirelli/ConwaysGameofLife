@@ -13,46 +13,57 @@ var conway = conway || {};
         this.canvas = null;
     };
 
-    const LIVE = conway.Board.ON,
-          DEAD = conway.Board.OFF,
+    const LIVE            = conway.ConwayImageBoard.ON,
+          DEAD            = conway.ConwayImageBoard.OFF,
           UNDERPOPULATION = 2 * LIVE,
-          OVERPOPULATION = 3 * LIVE,
-          REPRODUCTION = 3 * LIVE;
+          OVERPOPULATION  = 3 * LIVE,
+          REPRODUCTION    = 3 * LIVE;
 
     conway.Game.prototype = {
-        init:function(width, height) {
-            this.conwayBoard = new conway.BufferedBoard(width, height);
+        init:function(width, height, ctx) {
+            this.conwayBoard = new conway.ConwayImageBoard(width, height, ctx);
             return this;
         },
         seed:function() {
-            this.conwayBoard.setBoard(conway.Patterns.Blinker().getBoard(), this.conwayBoard.xytopos(0, 1));
+            let pattern       = conway.Patterns.Blinker(),
+                patternWidth  = pattern.getWidth(),
+                patternHeight = pattern.getHeight(),
+                offsetX       = 5,
+                offsetY       = 5;
+
+            for(let y=0; y<patternHeight; y++){
+                for(let x=0,v=0; x<patternWidth; x++){
+                    v = pattern.getValue(x, y);
+                    this.conwayBoard.setBufferValue(x + offsetX, y + offsetY, v); 
+                    this.conwayBoard.setValue(x + offsetX, y + offsetY, v);
+                }
+            }
+
             return this;
         },
         tick:function() {
             this.conwayBoard.swap();
             var board = this.conwayBoard,
-                processBoard = this.conwayBoard.getBoard(),
-                drawBoard = this.conwayBoard.getDrawBoard(),
                 liveCount = 0,
                 value = 0,
                 width = this.conwayBoard.getWidth(),
-                height = this.conwayBoard.getHeight(),
-                xytopos = this.conwayBoard.xytopos;
+                height = this.conwayBoard.getHeight();
             
             for(var y=0; y<height; y++){
                 for(var x=0; x<width; x++){
-                    value = board.getValue(x, y);
+                    value = board.getBufferValue(x, y);
+
                     liveCount = 0;
-                    liveCount += board.getValue(x-1, y-1);
-                    liveCount += board.getValue(x, y-1);
-                    liveCount += board.getValue(x+1, y-1);
+                    liveCount += board.getBufferValue(x-1, y-1);
+                    liveCount += board.getBufferValue(x, y-1);
+                    liveCount += board.getBufferValue(x+1, y-1);
                     
-                    liveCount += board.getValue(x-1, y);
-                    liveCount += board.getValue(x+1, y);
+                    liveCount += board.getBufferValue(x-1, y);
+                    liveCount += board.getBufferValue(x+1, y);
                     
-                    liveCount += board.getValue(x-1, y+1);
-                    liveCount += board.getValue(x, y+1);
-                    liveCount += board.getValue(x+1, y+1);
+                    liveCount += board.getBufferValue(x-1, y+1);
+                    liveCount += board.getBufferValue(x, y+1);
+                    liveCount += board.getBufferValue(x+1, y+1);
 
                     if(value === LIVE){
                         if( liveCount < UNDERPOPULATION || liveCount > OVERPOPULATION ){
@@ -74,13 +85,7 @@ var conway = conway || {};
 
             return this;
         },
-        setDisplayContainerElement:function(el){
-            if(typeof(el) === 'string'){
-                this.container = document.querySelector(el);
-            }else{
-                this.container = el;
-            }
-            return this;
+        draw:function() {
         },
         toString:function() {
             return this.conwayBoard.toString(); 
@@ -89,11 +94,5 @@ var conway = conway || {};
             console.log(this.toString()); 
             return this;
         }
-    };
-
-    function createCanvas() {
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = this.conwayBoard.getWidth();
-        this.canvas.height = this.conwayBoard.getHeight();
     };
 })(conway);

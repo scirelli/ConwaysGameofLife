@@ -3,35 +3,33 @@ var conway = conway || {};
 (function(conway){
     'use strict';
 
-    conway.Board = function(width, height){
+    conway.ABoard = function(width, height){
         this.width = width || 0;
         this.height = height || 0;
-        this.board = null;
+        this.data = null;
 
         this.init(width, height);
     };
 
-    conway.Board.ON  = 255,
-    conway.Board.OFF = 0;
-
-    conway.Board.prototype = {
-        init:function(width, height) {
-            this.board = new Uint8ClampedArray(width*height);
+    conway.ABoard.prototype = {
+        init:function(width, height) {},
+        clear:function() {
+            throw new Error('Must be implemented in base class.');
         },
+        getValue:function(x, y){
+            throw new Error('Must be implemented in base class.');
+        },
+        setValue:function(x, y, v){
+            throw new Error('Must be implemented in base class.');
+        },
+
         xytopos:function(x, y){
             return (y*this.width) + x;
         },
         pnttopos:function(p){
             return (p.y*this.width) + p.x;
         },
-        clear:function() {
-            this.board.fill(0); 
-            return this;
-        },
-        setBoard:function(board, offset) {
-            this.board.set(board, offset); 
-            return this;
-        },
+
         setWidth:function(w) {
             this.width = w;
             return this;
@@ -40,22 +38,21 @@ var conway = conway || {};
             this.height = h;
             return this;
         },
-        getBoard:function() {
-            return this.board;
-        },
         getHeight:function() {
             return this.height;
         },
         getWidth:function() {
             return this.width;
         },
-        getValue:function(x, y){
-            return this.board[(y*this.width) + x] || 0;
+
+        getData:function() {
+            return this.data;
         },
-        setValue:function(x, y, v){
-            this.getBoard()[(y*this.width) + x] = v;
+        setData:function(data) {
+            this.data = data;
             return this;
         },
+
         toString:function() {
             var height = this.getHeight(),
                 width = this.getWidth(),
@@ -71,52 +68,85 @@ var conway = conway || {};
             return str.join('\n');
         }
     };
-
-    conway.BufferedBoard = function(width, height){
-        conway.Board.call(this, width, height);
-
-        var bufferedBoard = [this.board, new conway.Board(width, height)];
-
-        this.board = bufferedBoard[0];
-        this.drawBoard = bufferedBoard[1];
+    
+    //=========================================================
+    
+    conway.ArrayBoard = function(width, height) {
+        conway.ABoard.call(this, width, height);
     };
-    conway.BufferedBoard.prototype = new conway.Board();
-
-    conway.BufferedBoard.prototype.swap = function() {
-        var tmp = this.drawBoard;
-
-        this.drawBoard = this.board;
-        this.board = tmp;
+    conway.ArrayBoard.prototype = new conway.ABoard();
+    conway.ArrayBoard.prototype.init = function(width, height) {
+        this.data = new Uint8Array(width * height);
+    };
+    conway.ArrayBoard.prototype.clear = function() {
+        this.data.fill(0);
+    };
+    conway.ArrayBoard.prototype.getValue = function(x, y){
+        return this.data[this.xytopos(x, y)];
+    };
+    conway.ArrayBoard.prototype.setValue = function(x, y, v){
+        this.data[this.xytopos(x, y)] = v;
     };
 
-    conway.BufferedBoard.prototype.setBoard = function(board) {
-        this.drawBoard = board.slice(0);
-        this.board = board.slice(0);
+    //=========================================================
+    conway.ABufferedBoard = function(width, height){
+        this.bufferedData = null;
+        conway.ABoard.call(this, width, height);
+    };
+    conway.ABufferedBoard.prototype = new conway.ABoard();
+
+    conway.ABufferedBoard.prototype.swap = function() {
+        var tmp = this.bufferedData;
+
+        this.bufferedData = this.data;
+        this.data = tmp;
+    };
+
+    conway.ABufferedBoard.prototype.clear = function() {
+        this.getBufferedData().fill(0);
+        this.getData().fill(0);
         return this;
     };
 
-    conway.BufferedBoard.prototype.getDrawBoard = function() {
-        return this.drawBoard;
+    conway.ABufferedBoard.prototype.getBufferedData = function() {
+        return this.bufferedData;
     };
 
-    conway.BufferedBoard.prototype.setValue = function(x, y, v){
-        this.drawBoard[(y*this.width) + x] = v;
+    conway.ABufferedBoard.prototype.setBufferedData = function(data) {
+         this.bufferedData = data;
+         return this;
+    };
+
+    conway.ABufferedBoard.prototype.getValue = function(x, y){
+        return this.getData()[this.xytopos(x, y)];
+    };
+    conway.ABufferedBoard.prototype.setValue = function(x, y, v){
+         this.getData()[this.xytopos(x, y)] = v;
+         return this;
+    };
+
+    conway.ABufferedBoard.prototype.setBufferValue = function(x, y, v){
+        this.getBufferedData()[this.xytopos(x, y)] = v;
         return this;
     };
+    conway.ABufferedBoard.prototype.getBufferValue = function(x, y){
+        return this.getBufferedData()[this.xytopos(x, y)];
+    };
 
-    conway.BufferedBoard.prototype.toString = function(){
-            var height = this.getHeight(),
-                width = this.getWidth(),
-                board = this.getDrawBoard(),
-                str = [];
+    //=========================================================
+    
+    /*
+     * Note: Read from bufferData write to data.
+     */
+    conway.ConwayImageBoard = function(width, height) {
+        conway.ABufferedBoard.call(this, width, height);
+    };
+    conway.ConwayImageBoard.ON  = 1,
+    conway.ConwayImageBoard.OFF = 0;
+    conway.ConwayImageBoard.prototype =  new conway.ABufferedBoard();
 
-            for(var y=0; y<height; y++){
-                for(var x=0, s=[]; x<width; x++){
-                    s.push(board[(y*this.width) + x] ? 'X' : '_');
-                }
-                str.push(s.join(','));
-            }
-
-            return str.join('\n');
+    conway.ConwayImageBoard.prototype.init = function() {
+        this.setData(new Uint8ClampedArray(this.getWidth() * this.getHeight()));
+        this.setBufferedData(new Uint8ClampedArray(this.getWidth() * this.getHeight()));
     };
 })(conway);
