@@ -21,7 +21,10 @@ var conway = conway || {};
 
     conway.Game.prototype = {
         init:function(width, height, ctx) {
-            this.conwayBoard = new conway.ConwayImageBoard(width, height, ctx);
+            this.conwayBoard   = new conway.ConwayImageBoard(width, height, ctx);
+            this.canvasContext = ctx;
+            this.imageBuffer   = ctx.createImageData(width, height);
+
             return this;
         },
         seed:function() {
@@ -86,6 +89,27 @@ var conway = conway || {};
             return this;
         },
         draw:function() {
+            let board       = this.conwayBoard,
+                width       = board.getWidth(),
+                height      = board.getHeight(),
+                imageBuffer = this.imageBuffer.data,
+                imageData   = board.getData();
+
+            for(let y=0,dy; y<height; y++){
+                dy = y*width;
+                for(let x=0,v=0,pos, posInBuffer=0; x<width; x++){
+                    pos = dy + x;
+                    posInBuffer = 4 * pos;
+
+                    imageBuffer[posInBuffer] = imageData[pos] * 255;
+                    imageBuffer[posInBuffer + 1] = imageData[pos] * 255;
+                    imageBuffer[posInBuffer + 2] = imageData[pos] * 255;
+                    imageBuffer[posInBuffer + 3] = imageData[pos] * 255;
+                }
+            }
+
+            this.canvasContext.putImageData(this.imageBuffer, 0, 0)
+            return this;
         },
         toString:function() {
             return this.conwayBoard.toString(); 
