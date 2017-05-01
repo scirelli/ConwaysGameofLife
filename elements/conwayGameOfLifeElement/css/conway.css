@@ -1,6 +1,11 @@
 :host{
     display:inline-block;
 }
+
 canvas{
     background-color: black;
+}
+
+canvas.buffer{
+    display:none;
 }

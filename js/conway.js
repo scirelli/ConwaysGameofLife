@@ -7,23 +7,51 @@ var conway = conway || {};
  */
 (function(conway){
     'use strict';
-    conway.Game = function(){
-        this.board = null;
-        this.container = null;
-        this.canvas = null;
+    conway.Game = function(document){
+        this.document            = document;
+        this.board               = null;
+        this.container           = null;
+        this.canvas              = null;
+        this.canvasContext       = null;
+        this.canvasBuffer        = null;
+        this.canvasBufferContext = null;
+        this.parentElement       = null;
+        this.conwayBoard         = null; 
+        this.imageData           = null;
+        this.imageBufferData     = null;
+        
+        this.width              = 0;
+        this.height             = 0;
+        this.scaledWidth        = 0;
+        this.scaledHeight       = 0;
     };
 
     const LIVE            = conway.ConwayImageBoard.ON,
           DEAD            = conway.ConwayImageBoard.OFF,
           UNDERPOPULATION = 2 * LIVE,
           OVERPOPULATION  = 3 * LIVE,
-          REPRODUCTION    = 3 * LIVE;
+          REPRODUCTION    = 3 * LIVE,
+          CELL_WIDTH      = 5,
+          CELL_HEIGHT     = 5;
 
     conway.Game.prototype = {
-        init:function(width, height, ctx) {
-            this.conwayBoard   = new conway.ConwayImageBoard(width, height, ctx);
-            this.canvasContext = ctx;
-            this.imageBuffer   = ctx.createImageData(width, height);
+        init:function(parentElement, width, height) {
+            if(this.width%4 || this.height%4) {
+                console.warn('Canvas dimensions should be in multiples of ' + SCALE_FACTOR + '.');
+            }
+            this.width        = width;
+            this.height       = height;
+            this.scaledWidth  = Math.floor(width/CELL_WIDTH);
+            this.scaledHeight = Math.floor(height/CELL_HEIGHT);
+
+            this.parentElement = parentElement;
+            this.canvas        = parentElement.querySelector('canvas#gameBoard');
+            this.canvasContext = this.canvas.getContext('2d');
+            this.imageData     = this.canvasContext.createImageData(this.scaledWidth, this.scaledHeight);
+            
+            this.conwayBoard   = new conway.ConwayImageBoard(this.scaledWidth, this.scaledHeight, this.canvasContext);
+
+            createBufferCanvas.call(this);
 
             return this;
         },
@@ -89,11 +117,11 @@ var conway = conway || {};
             return this;
         },
         draw:function() {
-            let board       = this.conwayBoard,
-                width       = board.getWidth(),
-                height      = board.getHeight(),
-                imageBuffer = this.imageBuffer.data,
-                imageData   = board.getData();
+            let board           = this.conwayBoard,
+                width           = board.getWidth(),
+                height          = board.getHeight(),
+                imageBufferData = this.imageBufferData.data,
+                imageData       = board.getData();
 
             for(let y=0,dy; y<height; y++){
                 dy = y*width;
@@ -101,14 +129,22 @@ var conway = conway || {};
                     pos = dy + x;
                     posInBuffer = 4 * pos;
 
-                    imageBuffer[posInBuffer] = imageData[pos] * 255;
-                    imageBuffer[posInBuffer + 1] = imageData[pos] * 255;
-                    imageBuffer[posInBuffer + 2] = imageData[pos] * 255;
-                    imageBuffer[posInBuffer + 3] = imageData[pos] * 255;
+                    imageBufferData[posInBuffer]     = imageData[pos] * 255;
+                    imageBufferData[posInBuffer + 1] = imageData[pos] * 255;
+                    imageBufferData[posInBuffer + 2] = imageData[pos] * 255;
+                    imageBufferData[posInBuffer + 3] = imageData[pos] * 255;
                 }
             }
 
-            this.canvasContext.putImageData(this.imageBuffer, 0, 0)
+            //this.canvasBufferContext.scale(SCALE_FACTOR*10, SCALE_FACTOR*10)
+            this.canvasBufferContext.putImageData(this.imageBufferData, 0, 0);
+            //this.canvasBufferContext.scale(1/(SCALE_FACTOR*10), 1/(SCALE_FACTOR*10))
+            //this.canvasContext.putImageData(this.imageBufferData, 0, 0);
+            //this.canvasBufferContext.scale(SCALE_FACTOR, SCALE_FACTOR);
+            this.canvasContext.clearRect(0, 0, width, height);
+            //this.canvasContext.scale(SCALE_FACTOR*4, SCALE_FACTOR*4);
+            this.canvasContext.drawImage(this.canvasBuffer, 0, 0);
+            //this.canvasContext.scale((1/SCALE_FACTOR*4), 1/(SCALE_FACTOR*4));
             return this;
         },
         toString:function() {
@@ -119,4 +155,23 @@ var conway = conway || {};
             return this;
         }
     };
+    
+    function removeCanvasBuffers() {
+        this.parentElement.querySelectorAll('canvas.buffer').forEach(function(buffer) {
+            buffer.remove(); 
+        });
+    }
+
+    function createBufferCanvas() {
+        removeCanvasBuffers.call(this);
+
+        this.canvasBuffer        = this.document.createElement('canvas');
+        this.canvasBufferContext = this.canvasBuffer.getContext('2d');
+        this.canvasBuffer.width  = this.width;
+        this.canvasBuffer.height = this.height;
+        this.imageBufferData     = this.canvasBufferContext.createImageData(this.scaledWidth, this.scaledHeight);
+
+        this.canvasBuffer.classList.add('buffer');
+        this.parentElement.appendChild(this.canvasBuffer);
+    }
 })(conway);

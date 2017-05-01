@@ -27,7 +27,7 @@ HTMLImports.whenReady(function() {
         constructor() {
             super();
 
-            _game.set(this, new conway.Game());
+            _game.set(this, new conway.Game(document));
 
             console.log('conway-game-of-life created');
         }
@@ -35,14 +35,13 @@ HTMLImports.whenReady(function() {
         ready() {
             super.ready();
             
-            let ctx = this.$.gameBoard.getContext('2d'),
-                game = _game.get(this);
+            let game = _game.get(this);
 
             this.$.gameBoard.width = this.width;
             this.$.gameBoard.height = this.height;
 
             game
-                .init(this.width, this.height, ctx)
+                .init(this.shadowRoot, this.width, this.height)
                 .seed()
                 .draw()
                 .tick()
