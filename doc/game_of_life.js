@@ -197,7 +197,6 @@ function game_of_life(cfg, pat) {
       return p;
     }
 
-
     function random_cells() {
       for (var i=0; i<cells_x; ++i) {
         for (var j=0; j<cells_y; ++j) {
@@ -390,7 +389,6 @@ function game_of_life(cfg, pat) {
       }
       ctx.strokeStyle=colGrid2;
       ctx.stroke();
-	
     }
  
     function set_cell_value(x, y, v) {
@@ -408,9 +406,9 @@ function game_of_life(cfg, pat) {
        }
     }
 
-   function get_cell_value(i, x, y) {
+    function get_cell_value(i, x, y) {
         if (!is_toroidal) {
-	  if (x<0 || x>=cells_x || y<0 || y>=cells_y) {
+      if (x<0 || x>=cells_x || y<0 || y>=cells_y) {
             return 0;
           }
         } else {
@@ -432,5 +430,5 @@ function game_of_life(cfg, pat) {
        }
 
        return  world_data[i][y*cells_x + x];
-   }
+    }
 }
