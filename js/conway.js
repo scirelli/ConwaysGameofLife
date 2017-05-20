@@ -72,6 +72,20 @@ var conway = conway || {};
 
             return this;
         },
+        seedRandom: function() {
+            let width = this.conwayBoard.getWidth(),
+                height = this.conwayBoard.getHeight();
+
+            for(let y=0; y<height; y++){
+                for(let x=0,v=0; x<width; x++){
+                    v = Math.round(Math.random());
+                    this.conwayBoard.setBufferValue(x, y, v); 
+                    this.conwayBoard.setValue(x, y, v);
+                }
+            }
+
+            return this;
+        },
         tick:function() {
             this.conwayBoard.swap();
             var board = this.conwayBoard,

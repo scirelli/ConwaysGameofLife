@@ -42,23 +42,21 @@ HTMLImports.whenReady(function() {
 
             game
                 .init(this.shadowRoot, this.width, this.height)
-                .seed()
-                .draw().print()
-                .tick()
-                .draw().print();
+                .seedRandom();
             
                 (function() {
-                    let count = 0;
+                    let continueRunning = true;
+                    const INTERVAL = 100;
 
-                    setTimeout(go, 500);
+                    setTimeout(go, INTERVAL);
 
                     function go(){
-                        count++;
-                        if(count < 10){
-                            game.tick()
-                                .draw()
-                                .print();
-                            setTimeout(go, 500);
+                        if(continueRunning){
+                            game
+                                .tick()
+                                .draw();
+
+                            setTimeout(go, INTERVAL);
                         }
                     }
                 })();
