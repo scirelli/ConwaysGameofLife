@@ -74,7 +74,7 @@ var conway = conway || {};
     conway.ArrayBoard = function(width, height) {
         conway.ABoard.call(this, width, height);
     };
-    conway.ArrayBoard.prototype = new conway.ABoard();
+    conway.ArrayBoard.prototype = Object.create(conway.ABoard.prototype);
     conway.ArrayBoard.prototype.init = function(width, height) {
         this.data = new Uint8Array(width * height);
     };
@@ -93,7 +93,7 @@ var conway = conway || {};
         this.bufferedData = null;
         conway.ABoard.call(this, width, height);
     };
-    conway.ABufferedBoard.prototype = new conway.ABoard();
+    conway.ABufferedBoard.prototype = Object.create(conway.ABoard.prototype);
 
     conway.ABufferedBoard.prototype.swap = function() {
         var tmp = this.bufferedData;
@@ -143,7 +143,7 @@ var conway = conway || {};
     };
     conway.ConwayImageBoard.ON  = 1,
     conway.ConwayImageBoard.OFF = 0;
-    conway.ConwayImageBoard.prototype =  new conway.ABufferedBoard();
+    conway.ConwayImageBoard.prototype = Object.create(conway.ABufferedBoard.prototype);
 
     conway.ConwayImageBoard.prototype.init = function() {
         this.setData(new Uint8ClampedArray(this.getWidth() * this.getHeight()));

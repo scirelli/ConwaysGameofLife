@@ -1,4 +1,6 @@
-var ColorRGB = (function() {
+var conway = conway || {};
+
+conway.ColorRGB = (function() {
     function ColorRGB(red, green, blue, alpha) {
         this.red = red;
         this.green = green;

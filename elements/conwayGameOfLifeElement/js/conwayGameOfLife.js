@@ -43,9 +43,9 @@ HTMLImports.whenReady(function() {
             game
                 .init(this.shadowRoot, this.width, this.height)
                 .seed()
-                .draw()
+                .draw().print()
                 .tick()
-                .draw();
+                .draw().print();
             
                 (function() {
                     let count = 0;
@@ -56,7 +56,8 @@ HTMLImports.whenReady(function() {
                         count++;
                         if(count < 10){
                             game.tick()
-                            .draw();
+                                .draw()
+                                .print();
                             setTimeout(go, 500);
                         }
                     }

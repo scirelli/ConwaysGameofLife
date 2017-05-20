@@ -17,7 +17,6 @@ var conway = conway || {};
         this.canvasBufferContext = null;
         this.parentElement       = null;
         this.conwayBoard         = null; 
-        this.imageData           = null;
         this.imageBufferData     = null;
         
         this.width              = 0;
@@ -32,7 +31,10 @@ var conway = conway || {};
           OVERPOPULATION  = 3 * LIVE,
           REPRODUCTION    = 3 * LIVE,
           CELL_WIDTH      = 5,
-          CELL_HEIGHT     = 5;
+          CELL_HEIGHT     = 5,
+          SCALE_FACTOR_X  = CELL_WIDTH,
+          SCALE_FACTOR_Y  = CELL_HEIGHT,
+          CELL_COLOR      = new conway.ColorRGB(255, 255, 255, 255);
 
     conway.Game.prototype = {
         init:function(parentElement, width, height) {
@@ -117,6 +119,7 @@ var conway = conway || {};
         draw:function() {
             drawCells.call(this);
             drawGrid.call(this);
+            return this;
         },
         toString:function() {
             return this.conwayBoard.toString(); 
@@ -140,27 +143,23 @@ var conway = conway || {};
                 pos = dy + x;
                 posInBuffer = 4 * pos;
 
-                imageBufferData[posInBuffer]     = imageData[pos] * 255;
-                imageBufferData[posInBuffer + 1] = imageData[pos] * 255;
-                imageBufferData[posInBuffer + 2] = imageData[pos] * 255;
-                imageBufferData[posInBuffer + 3] = imageData[pos] * 255;
+                imageBufferData[posInBuffer]     = imageData[pos] * CELL_COLOR.red;
+                imageBufferData[posInBuffer + 1] = imageData[pos] * CELL_COLOR.green; 
+                imageBufferData[posInBuffer + 2] = imageData[pos] * CELL_COLOR.blue;
+                imageBufferData[posInBuffer + 3] = CELL_COLOR.alpha;
             }
         }
 
-        //this.canvasBufferContext.scale(SCALE_FACTOR*10, SCALE_FACTOR*10)
         this.canvasBufferContext.putImageData(this.imageBufferData, 0, 0);
-        //this.canvasBufferContext.scale(1/(SCALE_FACTOR*10), 1/(SCALE_FACTOR*10))
-        //this.canvasContext.putImageData(this.imageBufferData, 0, 0);
-        //this.canvasBufferContext.scale(SCALE_FACTOR, SCALE_FACTOR);
-        this.canvasContext.clearRect(0, 0, width, height);
-        //this.canvasContext.scale(SCALE_FACTOR*4, SCALE_FACTOR*4);
+        this.canvasContext.scale(SCALE_FACTOR_X, SCALE_FACTOR_Y);
         this.canvasContext.drawImage(this.canvasBuffer, 0, 0);
-        //this.canvasContext.scale((1/SCALE_FACTOR*4), 1/(SCALE_FACTOR*4));
+        this.canvasContext.scale(1/SCALE_FACTOR_X, 1/SCALE_FACTOR_Y);
+
         return this;
     }
    
     function drawGrid() {
-        
+        return this;        
     }
 
     function removeCanvasBuffers() {
@@ -170,9 +169,8 @@ var conway = conway || {};
     }
      
     function createCanvas() {
-        this.canvas        = parentElement.querySelector('canvas#gameBoard');
+        this.canvas        = this.parentElement.querySelector('canvas#gameBoard');
         this.canvasContext = this.canvas.getContext('2d');
-        this.imageData     = this.canvasContext.createImageData(this.width, this.height);
         return this;
     }
 
@@ -183,7 +181,8 @@ var conway = conway || {};
         this.canvasBufferContext = this.canvasBuffer.getContext('2d');
         this.canvasBuffer.width  = this.columns;
         this.canvasBuffer.height = this.rows;
-        this.imageBufferData     = this.canvasBufferContext.createImageData(this.columns, this.rows);
+
+        this.imageBufferData     = this.canvasContext.createImageData(this.columns, this.rows);
 
         this.canvasBuffer.classList.add('buffer');
         this.parentElement.appendChild(this.canvasBuffer);
