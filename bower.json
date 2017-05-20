@@ -1,0 +1,26 @@
+{
+  "name": "conwaysGameOfLife",
+  "homepage": "https://github.com/scirelli/ConwaysGameofLife",
+  "authors": [
+    "Cirelli scirelli@gmail.com"
+  ],
+  "description": "Creating a web version of Conway's Game of Life.",
+  "main": "index.html",
+  "keywords": [
+    "conway",
+    "game",
+    "life"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0-rc.3"
+  }
+}
