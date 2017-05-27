@@ -99,16 +99,16 @@ var conway = conway || {};
                     value = board.getBufferValue(x, y);
 
                     liveCount = 0;
-                    liveCount += board.getBufferValue(x-1, y-1);
-                    liveCount += board.getBufferValue(x, y-1);
-                    liveCount += board.getBufferValue(x+1, y-1);
+                    liveCount += board.getBufferValue(x-1, y-1) || 0;
+                    liveCount += board.getBufferValue(x, y-1) || 0;
+                    liveCount += board.getBufferValue(x+1, y-1) || 0;
                     
-                    liveCount += board.getBufferValue(x-1, y);
-                    liveCount += board.getBufferValue(x+1, y);
+                    liveCount += board.getBufferValue(x-1, y) || 0;
+                    liveCount += board.getBufferValue(x+1, y) || 0;
                     
-                    liveCount += board.getBufferValue(x-1, y+1);
-                    liveCount += board.getBufferValue(x, y+1);
-                    liveCount += board.getBufferValue(x+1, y+1);
+                    liveCount += board.getBufferValue(x-1, y+1) || 0;
+                    liveCount += board.getBufferValue(x, y+1) || 0;
+                    liveCount += board.getBufferValue(x+1, y+1) || 0;
 
                     if(value === LIVE){
                         if( liveCount < UNDERPOPULATION || liveCount > OVERPOPULATION ){
@@ -173,6 +173,13 @@ var conway = conway || {};
     }
    
     function drawGrid() {
+        // this.canvasContext;
+
+        // ctx.moveTo(i * cell_width, 0);
+        // ctx.lineTo(i * cell_width, cells_y * cell_height);
+
+        // ctx.strokeStyle=colGrid;
+        // ctx.stroke();
         return this;        
     }
 
