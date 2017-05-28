@@ -96,6 +96,9 @@ textarea {
    ========================================================================== */
 body {
     background-color:#6D6D6D;
+    overflow:hidden;
+    margin:0;
+    padding:0;
 }
 
 

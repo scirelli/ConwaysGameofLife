@@ -36,7 +36,15 @@
                 </fieldset>
             </form>
         </section>
-
+        
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                var g = document.body.querySelector('conway-game-of-life');
+                g.width = window.innerWidth;
+                g.height = window.innerHeight;
+                g.init().start();
+            }, false);
+        </script>
         <script src="js/extras-math.js"></script>
         <script src="js/point.js"></script>
         <script src="js/board.js"></script>
